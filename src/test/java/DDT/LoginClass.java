@@ -40,7 +40,7 @@ public class LoginClass {
     }
 
 
-    @Test
+    @Test(invocationCount = 3)
     public void Chrome_browser_Test() throws InterruptedException, IOException {
 
 

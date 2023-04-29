@@ -18,8 +18,14 @@ public class WriteExcelFile {
         XSSFWorkbook wb = new XSSFWorkbook(fis);
         XSSFSheet sheet = wb.getSheet(sheetName);
         int row = startRow;
+        if (sheet.getRow(row) == null) {
+            sheet.createRow(row);
+        }
         while (sheet.getRow(row) != null && sheet.getRow(row).getCell(col) != null && !sheet.getRow(row).getCell(col).toString().isEmpty()) {
             row++;
+            if (sheet.getRow(row) == null) {
+                sheet.createRow(row);
+            }
         }
         sheet.getRow(row).createCell(col).setCellValue(cellValue);
         FileOutputStream fos = new FileOutputStream(new File(excelPath));
