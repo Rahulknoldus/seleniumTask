@@ -1,6 +1,7 @@
 package DDT;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -42,7 +43,7 @@ public class LoginClass {
     }
 
 
-//        @Test(invocationCount = 3)
+    //        @Test(invocationCount = 3)
     @Test
     public void Chrome_browser_Test() throws InterruptedException, IOException {
 
@@ -110,7 +111,7 @@ public class LoginClass {
                 String pcIdURL = response.getResponse().getUrl();
                 Pattern pattern = Pattern.compile("[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}");
                 Matcher matcher = pattern.matcher(pcIdURL);
-                if(matcher.find()){
+                if (matcher.find()) {
                     String pcId = matcher.group(0);
                     System.out.println(pcId);
                     try {
@@ -121,8 +122,28 @@ public class LoginClass {
                 }
             }
         });
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("button[role='button']"))).click();
-        System.out.println("HERE");
+        WebElement myAccount = driver.findElement(By.xpath("//button[@class='MyAccountDesktop_button__dRh5V']"));
+        myAccount.click();
+        WebElement paymentMethods = driver.findElement(By.xpath("//a[text()='Payment Methods']"));
+        paymentMethods.click();
+        WebElement card = driver.findElement(By.xpath("//button[@class='AccountPaymentInfo_button__wNevv Button_primary__PgyFQ']"));
+        card.click();
+        WebElement address = driver.findElement(By.xpath("//input[@id='addressLine1']"));
+        address.sendKeys("2729 MacLaren Street");
+        address.sendKeys(Keys.ENTER);
+        Thread.sleep(2000);
+        WebElement submit = driver.findElement(By.xpath("//button[@class='AccountPaymentInfo_button__wNevv Button_primary__PgyFQ']"));
+        submit.click();
+        WebElement cardNumber = driver.findElement(By.xpath("//input[@placeholder= \"Card Number\"]"));
+        cardNumber.sendKeys("4242424242424242");
+        WebElement expiry = driver.findElement(By.xpath("//input[@placeholder= \"MM/YY\"]"));
+        expiry.sendKeys("1223");
+        WebElement security = driver.findElement(By.xpath("//input[@placeholder= \"Security Code\"]"));
+        security.sendKeys("123");
+        WebElement cardholder = driver.findElement(By.xpath("//input[@placeholder= \"Cardholder Name\"]"));
+        cardholder.sendKeys("Test User");
+        WebElement save = driver.findElement(By.xpath("//button[@value= \"Pay Now\"]"));
+        save.click();
     }
 
     @AfterMethod
