@@ -18,6 +18,8 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LoginClass {
     public WebDriverWait wait;
@@ -40,7 +42,8 @@ public class LoginClass {
     }
 
 
-    @Test(invocationCount = 3)
+//        @Test(invocationCount = 3)
+    @Test
     public void Chrome_browser_Test() throws InterruptedException, IOException {
 
 
@@ -70,9 +73,9 @@ public class LoginClass {
         Thread.sleep(2000);
         driver.findElement(By.xpath("//body/div[@id='__next']/div[@class='layout-container']/div[@role='main']/div[@class='layout__secondary-cta']/a[@class='link link--theme-base link--inline']/span[1]")).click();
         Random rand = new Random();
-        int i = rand.nextInt(3000);
+        int i = rand.nextInt(10000);
         Thread.sleep(5000);
-        String randomEmailID = "User0" + i + "@yopmail.com";
+        String randomEmailID = "TestUserForPerf" + i + "@yopmail.com";
 //        String randomEmailID = "User01761@yopmail.com";
 
         writeExcel.writeExcelFile("Sheet1", randomEmailID, 0, 1);
@@ -102,25 +105,24 @@ public class LoginClass {
 
         devTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
         devTools.addListener(Network.responseReceived(), response -> {
-
-
-            System.out.println("Response URL is : " + response.getResponse().getUrl() + "  status code is : " + response.getResponse().getStatus());
-
-
+            if ((response.getResponse().getUrl()).contains("getMemberInfo")) {
+                System.out.println(response.getResponse().getUrl());
+                String pcIdURL = response.getResponse().getUrl();
+                Pattern pattern = Pattern.compile("[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}");
+                Matcher matcher = pattern.matcher(pcIdURL);
+                if(matcher.find()){
+                    String pcId = matcher.group(0);
+                    System.out.println(pcId);
+                    try {
+                        writeExcel.writeExcelFile("Sheet1", pcId, 0, 2);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
         });
-        devTools.addListener(Network.requestWillBeSent(), request -> {
-            System.out.println("Request body: " + request.getRequest().getPostData().toString() + "url: " + request.getRequest().getUrl());
-        });
-//        DevTools devTools = driver.getDevTools();
-//        devTools.createSession();
-//        devTools.send(Network.enable(Optional.of(1000000), Optional.empty(), Optional.empty()));
-//        devTools.addListener(Network.requestWillBeSent(), request -> {
-//            System.out.println("Request Method : " + request.getRequest().getMethod());
-//            System.out.println("Request URL : " + request.getRequest().getUrl());
-//            System.out.println("Request headers: " + request.getRequest().getHeaders().toString());
-//            System.out.println("Request body: " + request.getRequest().getPostData().toString());
-//        });
-
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("button[role='button']"))).click();
+        System.out.println("HERE");
     }
 
     @AfterMethod
